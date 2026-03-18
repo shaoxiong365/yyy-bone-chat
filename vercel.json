@@ -1,9 +1,4 @@
 {
-  "functions": {
-    "api/chat.js": {
-      "runtime": "@vercel/node@2.15.10"
-    }
-  },
   "builds": [
     { "src": "index.html", "use": "@vercel/static" },
     { "src": "api/chat.js", "use": "@vercel/node@2.15.10" }
