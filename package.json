@@ -1,0 +1,11 @@
+{
+  "name": "yyy-bone-chat",
+  "version": "1.0.0",
+  "description": "重庆友谊骨科智能客服",
+  "scripts": {
+    "start": "npx serve -s ."
+  },
+  "dependencies": {
+    "serve": "^14.2.0"
+  }
+}
