@@ -1,17 +1,22 @@
+// Cloudflare Worker - DeepSeek API Proxy
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
+    // Handle CORS preflight
     if (request.method === 'OPTIONS') {
       return new Response(null, {
         headers: {
           'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'POST',
-          'Access-Control-Allow-Headers': 'Content-Type'
+          'Access-Control-Allow-Methods': 'POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type',
         }
       });
     }
 
     if (request.method !== 'POST') {
-      return new Response('Method not allowed', { status: 405 });
+      return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+        status: 405,
+        headers: { 'Content-Type': 'application/json' }
+      });
     }
 
     try {
@@ -28,6 +33,7 @@ export default {
       });
 
       const data = await response.json();
+
       return new Response(JSON.stringify(data), {
         headers: {
           'Access-Control-Allow-Origin': '*',
