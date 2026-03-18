@@ -6,7 +6,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>重庆友谊骨科 - 在线咨询</title>
-<link rel="manifest" href="data:application/json;base64,eyJzaG9ydF9uYW1lIjoi53Yup55eF5bqt5Y+j5Y2/5a245omAIiwibmFtZSI6IuWxseiDq68w5YaF5a65Iiwic2hvcnRfbmFtZSI6IuWxseiDq68iLCJzdGFydF91cmwiOiJodHRwczovL3d3dy5hbnRocm9waGljLmNvbS8iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjMDdmMTYwIiwiZXhwbG9yZV9uYW1lIjoi5bqT5Y+j5Y2/5a24IiwiaWNvbnMiOlt7InNyYyI6Imh0dHBzOi8vd3d3LmFudGhyb3BoaWMuY29tL2ljb24ucG5nIiwic2l6ZXMiOlsxOTJdLCJ0eXBlIjoiaW1hZ2UvcG5nIn1dfQ==">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden;background:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB",sans-serif}
@@ -240,28 +239,35 @@ async function sendMsg(){
   showTyping();
 
   try{
+    const messages = chats.slice(-10).map(m=>({
+      role: m.role === 'ai' ? 'assistant' : 'user',
+      content: m.content
+    }));
+    messages.unshift({role:'system',content:buildPrompt()});
+    messages.push({role:'user',content:txt});
+
     const resp = await fetch(DS_URL,{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+DS_KEY},
       body:JSON.stringify({
         model:DS_MODEL,
-        messages:[
-          {role:'system',content:buildPrompt()},
-          ...chats.slice(-10).map(m=>({role:m.role,content:m.content})),
-          {role:'user',content:txt}
-        ],
+        messages:messages,
         max_tokens:500,
         temperature:0.7
       })
     });
     hideTyping();
+    if(!resp.ok){
+      const err = await resp.json().catch(()=>({}));
+      throw new Error(err.error?.message || 'API错误'+resp.status);
+    }
     const data = await resp.json();
     const reply = data.choices[0].message.content;
     addMsg('ai',reply);
     checkInvite(reply);
   }catch(e){
     hideTyping();
-    addMsg('ai','抱歉系统繁忙，请稍后重试或拨打'+H.phone);
+    addMsg('ai','抱歉：'+e.message+'，请稍后重试或拨打'+H.phone);
   }
   btn.disabled = false;
   input.focus();
