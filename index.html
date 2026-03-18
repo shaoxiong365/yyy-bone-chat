@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>重庆友谊骨科 - 在线咨询</title>
+<link rel="manifest" href="data:application/json;base64,eyJzaG9ydF9uYW1lIjoi53Yup55eF5bqt5Y+j5Y2/5a245omAIiwibmFtZSI6IuWxseiDq68w5YaF5a65Iiwic2hvcnRfbmFtZSI6IuWxseiDq68iLCJzdGFydF91cmwiOiJodHRwczovL3d3dy5hbnRocm9waGljLmNvbS8iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjMDdmMTYwIiwiZXhwbG9yZV9uYW1lIjoi5bqT5Y+j5Y2/5a24IiwiaWNvbnMiOlt7InNyYyI6Imh0dHBzOi8vd3d3LmFudGhyb3BoaWMuY29tL2ljb24ucG5nIiwic2l6ZXMiOlsxOTJdLCJ0eXBlIjoiaW1hZ2UvcG5nIn1dfQ==">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB",sans-serif}
+.app-wrap{height:100%;display:flex;flex-direction:column;max-width:600px;margin:0 auto;background:#fff}
+
+/* 顶部导航 */
+.header{height:56px;background:linear-gradient(135deg,#07c160,#0ea5e9);display:flex;align-items:center;justify-content:center;padding:0 16px;flex-shrink:0;position:relative}
+.header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:rgba(255,255,255,0.2)}
+.header h1{font-size:17px;font-weight:600;color:#fff}
+.header-right{position:absolute;right:16px;top:50%;transform:translateY(-50%)}
+.menu-btn{background:none;border:none;color:#fff;font-size:22px;cursor:pointer}
+
+/* 聊天区域 */
+.chat-area{flex:1;overflow-y:auto;padding:12px 10px;background:#f5f5f5;-webkit-overflow-scrolling:touch}
+.chat-area::-webkit-scrollbar{width:0}
+
+/* 消息气泡 */
+.msg{display:flex;gap:8px;margin-bottom:12px;align-items:flex-start}
+.msg.ai{flex-direction:row}
+.msg.me{flex-direction:row-reverse}
+.avatar{width:36px;height:36px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:#fff;flex-shrink:0}
+.ai .avatar{background:linear-gradient(135deg,#07c160,#0ea5e9)}
+.me .avatar{background:#576b95}
+.bubble{max-width:75%;padding:10px 13px;border-radius:8px;font-size:15px;line-height:1.5;word-break:break-all;position:relative}
+.ai .bubble{background:#fff;border-radius:2px 8px 8px 8px;box-shadow:0 1px 2px rgba(0,0,0,0.08);color:#333}
+.me .bubble{background:#95ec69;border-radius:8px 2px 8px 8px;color:#111}
+.copy-btn{position:absolute;right:-8px;top:-8px;width:24px;height:24px;background:#07c160;border:none;border-radius:50%;color:#fff;font-size:12px;cursor:pointer;display:none;align-items:center;justify-content:center}
+.msg.ai:hover .copy-btn{display:flex}
+
+/* 快捷入口 */
+.quick-reply{display:flex;flex-wrap:wrap;gap:8px;padding:8px 10px;background:#fff;border-top:1px solid #eee}
+.quick-btn{padding:6px 12px;background:#f0f0f0;border:none;border-radius:16px;font-size:13px;color:#333;white-space:nowrap}
+
+/* 输入区域 */
+.input-area{background:#f7f7f7;border-top:1px solid #ddd;padding:8px 10px;display:flex;gap:8px;align-items:flex-end;flex-shrink:0}
+.input-area input{flex:1;padding:10px 14px;background:#fff;border:1px solid #ddd;border-radius:20px;font-size:15px;outline:none}
+.input-area input:focus{border-color:#07c160}
+.send-btn{width:42px;height:42px;background:#07c160;border:none;border-radius:50%;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.send-btn:disabled{background:#ccc}
+
+/* 打字动画 */
+.typing{display:flex;align-items:center;gap:4px;padding:10px 13px;background:#fff;border-radius:2px 8px 8px 8px;width:fit-content}
+.typing span{width:7px;height:7px;background:#bbb;border-radius:50%;animation:typing 1.2s infinite}
+.typing span:nth-child(2){animation-delay:0.2s}
+.typing span:nth-child(3){animation-delay:0.4s}
+@keyframes typing{0%,80%,100%{opacity:0.3}40%{opacity:1}}
+
+/* 加载中 */
+.loading{text-align:center;padding:20px;color:#999;font-size:13px}
+
+/* 底部菜单 */
+.bottom-nav{display:flex;background:#fff;border-top:1px solid #eee;flex-shrink:0}
+.bottom-nav button{flex:1;padding:10px;background:none;border:none;font-size:12px;color:#666;display:flex;flex-direction:column;align-items:center;gap:4px}
+.bottom-nav button.active{color:#07c160}
+.bottom-nav button span{font-size:20px}
+
+/* 弹窗 */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;align-items:center;justify-content:center}
+.modal.show{display:flex}
+.modal-content{background:#fff;border-radius:12px;padding:20px;width:85%;max-width:320px;text-align:center}
+.modal-content h3{font-size:16px;margin-bottom:12px}
+.modal-content p{font-size:14px;color:#666;margin-bottom:16px;line-height:1.6}
+.modal-content button{padding:10px 24px;background:#07c160;border:none;border-radius:20px;color:#fff;font-size:14px}
+
+/* 邀请卡片 */
+.invite-card{background:linear-gradient(135deg,#f0f9f4,#e8f5f0);border:1px solid rgba(7,193,96,0.3);border-radius:10px;padding:12px;margin:10px 0}
+.invite-card h4{font-size:14px;color:#07a050;margin-bottom:6px}
+.invite-card p{font-size:12px;color:#666;margin-bottom:10px}
+.invite-btn{display:block;padding:10px;background:#07c160;color:#fff;border:none;border-radius:8px;font-size:14px;width:100%}
+</style>
+</head>
+<body>
+<div class="app-wrap">
+  <!-- 顶部 -->
+  <div class="header">
+    <h1>🏥 重庆友谊骨科</h1>
+    <div class="header-right">
+      <button class="menu-btn" onclick="showMenu()">☰</button>
+    </div>
+  </div>
+
+  <!-- 聊天区 -->
+  <div class="chat-area" id="chatArea"></div>
+
+  <!-- 快捷入口 -->
+  <div class="quick-reply" id="quickReply">
+    <button class="quick-btn" onclick="quickAsk('骨头问题')">🦴 骨头问题</button>
+    <button class="quick-btn" onclick="quickAsk('预约挂号')">📅 预约挂号</button>
+    <button class="quick-btn" onclick="quickAsk('费用医保')">💰 费用医保</button>
+  </div>
+
+  <!-- 输入区 -->
+  <div class="input-area">
+    <input type="text" id="userInput" placeholder="请输入您的问题..." onkeydown="if(event.key==='Enter')sendMsg()">
+    <button class="send-btn" id="sendBtn" onclick="sendMsg()">↑</button>
+  </div>
+
+  <!-- 底部导航 -->
+  <div class="bottom-nav">
+    <button class="active" onclick="switchTab('chat')"><span>💬</span>咨询</button>
+    <button onclick="switchTab('appt')"><span>📋</span>预约</button>
+    <button onclick="switchTab('profile')"><span>👤</span>我的</button>
+  </div>
+</div>
+
+<!-- 菜单弹窗 -->
+<div class="modal" id="menuModal">
+  <div class="modal-content">
+    <h3>联系我们</h3>
+    <p>📞 电话：023-65423456<br>🏥 地址：重庆市大渡口区钢花路488号</p>
+    <button onclick="closeModal('menuModal')">知道了</button>
+  </div>
+</div>
+
+<script>
+// ===== 配置 =====
+const H = {
+  name:'重庆友谊骨科医院',
+  phone:'023-65423456',
+  addr:'重庆市沙坪坝区石小路70号',
+  lm:'轻轨1号线马家岩站2号出口步行约50米',
+  hours:'08:30–17:30（节假日正常接诊）',
+  er:'24小时急诊不休',
+  nature:'重庆市医保·新农合·工伤保险·民政救助·平安/人保商业险定点骨科专科医院',
+  concept:'西医治骨、中医养骨，中西医结合',
+  depts:['脊柱外科','关节外科','创伤骨科','手外科','医学康复科','激光椎间盘科'],
+  doctors:[
+    {n:'孙跃文',t:'副主任医师·骨二科主任',d:'周一三五上午',s:'髋膝关节置换、脊柱骨盆骨折手术、椎间盘突出微创'},
+    {n:'王峰',t:'副主任医师',d:'周二四六全天',s:'腰颈椎、骨关节疾病诊疗'},
+    {n:'王传年',t:'康复医师',d:'周一至五下午',s:'针灸推拿、中医康复'}
+  ],
+  special:['椎间孔镜微创','关节镜手术','针灸推拿','康复理疗'],
+  faq:[
+    ['医保能用吗','是重庆市医保、新农合、工伤保险、民政救助定点，也接受平安/人保商业险，就诊带医保卡按比例报销'],
+    ['怎么挂号','拨打023-65423456预约，或到院直接挂号，建议提前预约'],
+    ['能先咨询吗','可以，直接发消息描述您的症状，我帮您分析']
+  ]
+};
+
+const DS_KEY = 'sk-3482ee202dea4ef0ab206763edea66d1';
+const DS_URL = 'https://api.deepseek.com/chat/completions';
+const DS_MODEL = 'deepseek-chat';
+
+// ===== 状态 =====
+let chats = [];
+let roleId = 'mobile_user';
+let curTab = 'chat';
+
+// ===== 本地存储 =====
+const LS = {
+  get:()=>JSON.parse(localStorage.getItem('m chats')||'[]'),
+  save:(c)=>localStorage.setItem('m chats',JSON.stringify(c))
+};
+
+// ===== 初始化 =====
+window.addEventListener('DOMContentLoaded',()=>{
+  chats = LS.get();
+  renderChats();
+  if(chats.length===0){
+    // 欢迎语
+    setTimeout(()=>{
+      addMsg('ai','您好！我是友谊小骨 🦴\n\n请问您哪里不舒服？我来帮您分析分析~');
+      saveChat();
+    },500);
+  }
+});
+
+// ===== 核心功能 =====
+function renderChats(){
+  const area = document.getElementById('chatArea');
+  area.innerHTML = chats.map(m=>`
+    <div class="msg ${m.role}">
+      <div class="avatar">${m.role==='ai'?'友':'我'}</div>
+      <div class="bubble">
+        ${m.content}
+        ${m.role==='ai'?'<button class="copy-btn" onclick="copyMsg(this,\''+m.content.replace(/'/g,"\\'")+'\')" title="复制到微信">📋</button>':''}
+      </div>
+    </div>
+  `).join('');
+  area.scrollTop = area.scrollHeight;
+}
+
+function copyMsg(btn,content){
+  navigator.clipboard.writeText(content).then(()=>{
+    btn.textContent='✓';
+    setTimeout(()=>btn.textContent='📋',1500);
+    // 提示用户
+    const toast = document.createElement('div');
+    toast.style.cssText='position:fixed;bottom:120px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.7);color:#fff;padding:8px 16px;border-radius:20px;font-size:13px;z-index:200';
+    toast.textContent='已复制！去微信粘贴发送';
+    document.body.appendChild(toast);
+    setTimeout(()=>toast.remove(),2000);
+  });
+}
+
+function addMsg(role,content){
+  chats.push({role,content,t:Date.now()});
+  renderChats();
+  saveChat();
+}
+
+function saveChat(){
+  LS.save(chats.slice(-50));
+}
+
+function showTyping(){
+  const area = document.getElementById('chatArea');
+  const existing = document.getElementById('typingBubble');
+  if(existing) return;
+  const div = document.createElement('div');
+  div.id = 'typingBubble';
+  div.className = 'msg ai';
+  div.innerHTML = `<div class="avatar">友</div><div class="typing"><span></span><span></span><span></span></div>`;
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+
+function hideTyping(){
+  const el = document.getElementById('typingBubble');
+  if(el) el.remove();
+}
+
+async function sendMsg(){
+  const input = document.getElementById('userInput');
+  const btn = document.getElementById('sendBtn');
+  const txt = input.value.trim();
+  if(!txt || btn.disabled) return;
+  input.value = '';
+  btn.disabled = true;
+  addMsg('me',txt);
+  showTyping();
+
+  try{
+    const resp = await fetch(DS_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+DS_KEY},
+      body:JSON.stringify({
+        model:DS_MODEL,
+        messages:[
+          {role:'system',content:buildPrompt()},
+          ...chats.slice(-10).map(m=>({role:m.role,content:m.content})),
+          {role:'user',content:txt}
+        ],
+        max_tokens:500,
+        temperature:0.7
+      })
+    });
+    hideTyping();
+    const data = await resp.json();
+    const reply = data.choices[0].message.content;
+    addMsg('ai',reply);
+    checkInvite(reply);
+  }catch(e){
+    hideTyping();
+    addMsg('ai','抱歉系统繁忙，请稍后重试或拨打'+H.phone);
+  }
+  btn.disabled = false;
+  input.focus();
+}
+
+function buildPrompt(){
+  const faq = H.faq.map(f=>'Q:'+f[0]+' A:'+f[1]).join('\n');
+  return `你是${H.name}的智能健康顾问"友谊小骨"🦴
+
+【性格】温暖亲切，像朋友聊天，用表情符号
+
+【规则】
+- 每次回复2-3句话
+- 不要一上来就推荐医院或预约
+- 用"过来让主任看看"代替"来医院"
+- 问清症状再给建议
+
+【医院信息】
+电话:${H.phone}
+地址:${H.addr}
+接诊:${H.hours}
+专家:${H.doctors.map(d=>d.n+'('+d.d+')').join(',')}
+
+【常见问答】
+${faq}
+
+回复要求：温暖专业，通俗易懂，让患者想继续聊下去。`;
+}
+
+function checkInvite(reply){
+  const signs = ['过来','面诊','主任看看','检查','预约','周三','周五'];
+  if(signs.some(s=>reply.includes(s))){
+    // 可以显示预约按钮
+  }
+}
+
+function quickAsk(txt){
+  document.getElementById('userInput').value = txt;
+  sendMsg();
+}
+
+function showMenu(){
+  document.getElementById('menuModal').classList.add('show');
+}
+
+function closeModal(id){
+  document.getElementById(id).classList.remove('show');
+}
+
+function switchTab(tab){
+  curTab = tab;
+  document.querySelectorAll('.bottom-nav button').forEach((b,i)=>{
+    b.className = i===(['chat','appt','profile'].indexOf(tab))?'active':'';
+  });
+  if(tab==='appt'){
+    addMsg('ai','📅 预约挂号\n\n请回复"预约"，告诉我：\n1. 您的姓名\n2. 联系电话\n3. 症状描述\n4. 希望预约的医生和时间');
+  }
+}
+</script>
+</body>
+</html>
